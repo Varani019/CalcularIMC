@@ -1,55 +1,52 @@
 package com.example.myimc
 
-import android.content.res.ColorStateList
-import android.icu.number.IntegerWidth
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.CalendarContract
-import android.widget.Button
-import android.widget.TextView
+import android.view.View
+import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_main.*
+import java.text.DecimalFormat
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+    }
 
-        val btCalcular:Button = Calcular
-        val resultado:TextView = Resultado
-        val resultado2 = Resultado2
+    fun execute(view: View) {
+        if (edtWeight.text.toString().isEmpty() || edtHeight.text.toString().isEmpty()) {
+            Toast.makeText(this, "Por favor, preencha os campos", Toast.LENGTH_SHORT).show()
+            return
+        }
 
-        btCalcular.setOnClickListener {
+        executeCalc()
+    }
 
-            val peso = Peso.text.toString().toDouble()
-            val altura = Altura.text.toString().toDouble()
-            val conta = String.format("%.1f", peso/(altura*altura)).toDouble()
+    private fun executeCalc() {
+        val peso = edtWeight.text.toString().toDouble()
+        val altura = edtHeight.text.toString().toDouble()
+        val resultado = peso/(altura*altura)
 
-
-            if (conta < 18.5){
-                resultado.setText("$conta")
-                resultado.setTextColor(Color.BLUE)
-                resultado2.setText("Peso baixo")
-
-
-            }else if  (conta< 25){
-                resultado.setText("$conta")
-                resultado.setTextColor(Color.GREEN)
-                resultado2.setText("Peso adequado")
-
-            }else if (conta < 30){
-                resultado.setText("$conta")
-                resultado.setTextColor(Color.BLUE)
-                resultado2.setText("Em sobrepeso")
-
-            }else {
-                resultado.setText("$conta")
-                resultado.setTextColor(Color.RED)
-                resultado2.setText("Em obesidade")
-
+        when {
+            resultado < 18.5 -> {
+                txtResult.text = "${resultado.format()} -> Peso baixo"
+                txtResult.setTextColor(Color.BLUE)
             }
-
-
+            resultado < 25 -> {
+                txtResult.text = "${resultado.format()} -> Peso adequado"
+                txtResult.setTextColor(Color.GREEN)
+            }
+            resultado < 30 -> {
+                txtResult.text = "${resultado.format()} -> Sobrepeso"
+                txtResult.setTextColor(Color.BLACK)
+            }
+            else -> {
+                txtResult.text = "${resultado.format()} -> Obesidade"
+                txtResult.setTextColor(Color.RED)
+            }
         }
     }
+
+    private fun Double.format() = DecimalFormat("#.##").format(this)
 }
